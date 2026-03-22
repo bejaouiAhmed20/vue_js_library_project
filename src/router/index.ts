@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import Signup from '../views/Signup.vue'
 
 // Lazy loaded pages
 const Home = () => import('../views/Home.vue')
@@ -10,6 +11,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: Signup
   },
   {
     path: '/home',

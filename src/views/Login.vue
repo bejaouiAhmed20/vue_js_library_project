@@ -13,19 +13,23 @@
           </div>
 
           <!-- Form -->
-          <v-form>
-            <!-- Email -->
+          <v-form @submit.prevent="handleLogin">
+            
+            <!-- Identifiant -->
             <v-text-field
-              label="Email"
+              v-model="form.identifiant"
+              label="Username or Email"
               variant="outlined"
               density="comfortable"
-              prepend-inner-icon="mdi-email-outline"
+              prepend-inner-icon="mdi-account"
               class="input-field"
               color="primary"
+              required
             />
 
             <!-- Password -->
             <v-text-field
+              v-model="form.password"
               label="Password"
               type="password"
               variant="outlined"
@@ -33,12 +37,10 @@
               prepend-inner-icon="mdi-lock-outline"
               class="input-field"
               color="primary"
+              required
             />
 
-            <!-- Forgot -->
-            <div class="forgot">
-              <a href="#">Forgot password?</a>
-            </div>
+           
 
             <!-- Button -->
             <v-btn
@@ -46,31 +48,22 @@
               color="primary"
               size="large"
               class="login-btn"
+              type="submit"
+              :loading="loading"
             >
               Login
             </v-btn>
+
+            <!-- Message -->
+            <p v-if="message" :class="isError ? 'error' : 'success'">
+              {{ message }}
+            </p>
+
           </v-form>
-
-          <!-- Divider -->
-          <div class="divider">
-            <span>OR</span>
-          </div>
-
-          <!-- Social -->
-          <div class="social-buttons">
-            <v-btn variant="outlined" class="social-btn">
-              Google
-            </v-btn>
-
-            <v-btn variant="outlined" class="social-btn">
-              Facebook
-            </v-btn>
-          </div>
-
           <!-- Signup -->
           <div class="signup">
             Don’t have an account?
-            <a href="#">Sign up</a>
+            <a href="/signup">Sign up</a>
           </div>
 
         </v-card>
@@ -81,7 +74,44 @@
 </template>
 
 <script setup lang="ts">
-// Design only
+import { reactive, ref } from "vue"
+import axios from "axios"
+
+const loading = ref(false)
+const message = ref("")
+const isError = ref(false)
+
+const form = reactive({
+  identifiant: "",
+  password: "",
+})
+
+const handleLogin = async () => {
+  loading.value = true
+  message.value = ""
+
+  try {
+    const res = await axios.post("http://localhost:3000/auth/signin", form)
+
+    // ✅ Save token (if exists)
+    if (res.data.access_token) {
+      localStorage.setItem("token", res.data.access_token)
+    }
+
+    message.value = "Login successful ✅"
+    isError.value = false
+
+    // 👉 Redirect after login (optional)
+    // window.location.href = "/dashboard"
+
+  } catch (err: any) {
+    message.value =
+      err.response?.data?.message || "Invalid credentials ❌"
+    isError.value = true
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -128,21 +158,6 @@
   margin-bottom: 15px;
 }
 
-/* Forgot */
-.forgot {
-  text-align: right;
-  margin-bottom: 15px;
-}
-
-.forgot a {
-  font-size: 13px;
-  color: #60a5fa;
-  text-decoration: none;
-}
-
-.forgot a:hover {
-  text-decoration: underline;
-}
 
 /* Button */
 .login-btn {
@@ -199,5 +214,18 @@
 
 .signup a:hover {
   text-decoration: underline;
+}
+
+/* Messages */
+.success {
+  color: #22c55e;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.error {
+  color: #ef4444;
+  text-align: center;
+  margin-top: 10px;
 }
 </style>
