@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authors = ref<any[]>([])
 const loading = ref(true)
 const selected = ref<any>(null)
+const query = ref('')
 
 onMounted(async () => {
   try {
@@ -18,7 +19,14 @@ onMounted(async () => {
   }
 })
 
-// Click author to show their books, click again to hide
+const filtered = computed(() =>
+  query.value
+    ? authors.value.filter(a =>
+        `${a.prenom} ${a.nom}`.toLowerCase().includes(query.value.toLowerCase())
+      )
+    : authors.value
+)
+
 const select = (author: any) => {
   selected.value = selected.value?.id === author.id ? null : author
 }
@@ -26,7 +34,20 @@ const select = (author: any) => {
 
 <template>
   <div class="bg-gray-100 p-8">
-    <h1 class="text-3xl font-bold text-center mb-8">✍️ Authors</h1>
+    <h1 class="text-3xl font-bold text-center mb-6">✍️ Authors</h1>
+
+    <!-- Search -->
+    <div class="flex justify-center mb-8">
+      <div class="flex items-center bg-white border border-gray-300 rounded-xl px-4 py-2 shadow-sm w-full max-w-md">
+        <span class="mdi mdi-magnify text-gray-400 mr-2 text-lg" />
+        <input
+          v-model="query"
+          type="text"
+          placeholder="Search authors..."
+          class="flex-1 outline-none text-sm text-gray-700 bg-transparent"
+        />
+      </div>
+    </div>
 
     <p v-if="loading" class="text-center text-gray-500">Loading authors...</p>
 
@@ -34,7 +55,7 @@ const select = (author: any) => {
       <!-- Authors -->
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-10">
         <div
-          v-for="author in authors"
+          v-for="author in filtered"
           :key="author.id"
           @click="select(author)"
           :class="selected?.id === author.id ? 'bg-blue-600 text-white' : 'bg-white text-gray-800'"
