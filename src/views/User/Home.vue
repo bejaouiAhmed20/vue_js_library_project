@@ -11,4 +11,5 @@ const searchQuery = ref('')
     <Search @search="searchQuery = $event" />
     <BookList :query="searchQuery" />
   </div>
+
 </template>
