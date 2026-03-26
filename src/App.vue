@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <template>
   <!-- App.vue est le composant racine -->
   <!-- Il contient NavBar + BookTable -->
@@ -72,3 +73,24 @@ export default {
   padding: 2rem 2.5rem;
 }
 </style>
+=======
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import Navbar from './components/Navbar.vue'
+
+const route = useRoute()
+
+const hideNavbar = ['Login', 'Signup', 'NotFound']
+const showNavbar = computed(() => !hideNavbar.includes(route.name as string))
+</script>
+
+<template>
+  <v-app>
+    <Navbar v-if="showNavbar" />
+    <div :class="showNavbar ? 'pt-16' : ''">
+      <router-view />
+    </div>
+  </v-app>
+</template>
+>>>>>>> 87b1b1b46fdbd8b0f9b052282c8a650563784acc

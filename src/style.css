@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ── Variables globales (thème bleu) ── */
 :root {
   --blue-dark:  #0d2b55;
@@ -62,3 +63,6 @@ body {
 .btn-icon:hover {
   background: linear-gradient(135deg, var(--blue-btn-h), #0b2244);
 }
+=======
+@import "tailwindcss";
+>>>>>>> 87b1b1b46fdbd8b0f9b052282c8a650563784acc
