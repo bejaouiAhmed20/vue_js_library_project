@@ -8,7 +8,6 @@ const isError = ref(false)
 
 const form = reactive({ username: '', email: '', password: '' })
 
-// Submit signup form
 const handleSignup = async () => {
   loading.value = true
   message.value = ''
@@ -16,13 +15,12 @@ const handleSignup = async () => {
   try {
     await axios.post('http://localhost:3000/auth/signup', {
       ...form,
-      role: 'ROLE_USER',
+      role: 'user', 
     })
 
     message.value = 'Account created successfully ✅'
     isError.value = false
 
-    // Reset form
     form.username = ''
     form.email = ''
     form.password = ''
@@ -36,63 +34,39 @@ const handleSignup = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+  <div class="min-h-screen bg-gray-300 flex items-center justify-center">
 
-    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
+    <form @submit.prevent="handleSignup" class="w-full max-w-4xl">
 
-      <!-- Header -->
-      <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Create Account</h1>
+      <div class="mb-6">
+        <label>Username</label>
+        <input v-model="form.username" class="w-full border px-3 py-2 bg-gray-100" />
       </div>
 
-      <!-- Form -->
-      <form @submit.prevent="handleSignup" class="flex flex-col gap-4">
+      <div class="mb-6">
+        <label>Email</label>
+        <input v-model="form.email" class="w-full border px-3 py-2 bg-gray-100" />
+      </div>
 
-        <input
-          v-model="form.username"
-          type="text"
-          placeholder="Username"
-          required
-          class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"
-        />
+      <div class="mb-6">
+        <label>Password</label>
+        <input type="password" v-model="form.password" class="w-full border px-3 py-2 bg-gray-100" />
+      </div>
 
-        <input
-          v-model="form.email"
-          type="email"
-          placeholder="Email"
-          required
-          class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <input
-          v-model="form.password"
-          type="password"
-          placeholder="Password"
-          required
-          class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <button
-          type="submit"
-          :disabled="loading"
-          class="bg-blue-600 text-white py-2 rounded-xl font-semibold hover:bg-blue-700 transition disabled:opacity-50"
-        >
-          {{ loading ? 'Creating...' : 'Sign Up' }}
+      <div class="flex flex-col items-center gap-4">
+        <button class="bg-blue-700 text-white px-6 py-2 rounded">
+          {{ loading ? 'Loading...' : 'Register' }}
         </button>
 
-        <!-- Feedback message -->
-        <p v-if="message" :class="isError ? 'text-red-500' : 'text-green-500'" class="text-center text-sm">
-          {{ message }}
-        </p>
+        <router-link to="/login" class="bg-blue-700 text-white px-6 py-2 rounded">
+          Switch to Login
+        </router-link>
+      </div>
 
-      </form>
-
-      <!-- Login link -->
-      <p class="text-center text-sm text-gray-400 mt-4">
-        Already have an account?
-        <router-link to="/" class="text-blue-500 hover:underline">Login</router-link>
+      <p v-if="message" :class="isError ? 'text-red-500' : 'text-green-500'" class="text-center mt-4">
+        {{ message }}
       </p>
 
-    </div>
+    </form>
   </div>
 </template>

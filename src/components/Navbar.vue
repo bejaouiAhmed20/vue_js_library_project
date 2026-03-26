@@ -1,65 +1,71 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
-const username = localStorage.getItem('username')
-const showMenu = ref(false)
+const route = useRoute()
 
-const links = [
-  { name: 'Home',    to: '/home',    icon: 'mdi-home' },
-  { name: 'Authors', to: '/authors', icon: 'mdi-account-group' },
-]
+const token = ref(localStorage.getItem('token'))
+const role  = ref(localStorage.getItem('role'))
+
+watch(route, () => {
+  token.value = localStorage.getItem('token')
+  role.value  = localStorage.getItem('role')
+})
 
 const logout = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('username')
-  router.push('/')
+  localStorage.clear()
+  token.value = null
+  role.value  = null
+  router.push('/login')
 }
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 h-16 flex items-center px-6">
+<nav class="bg-gradient-to-r from-blue-900 to-blue-600 px-8 py-4 flex justify-between items-center shadow-md ">
 
     <!-- Logo -->
     <div @click="router.push('/home')" class="flex items-center gap-2 cursor-pointer text-gray-800">
       <span class="mdi mdi-book-open-page-variant text-xl" />
-      <span class="font-semibold text-lg">My Library</span>
+      <span class="font-semibold text-2xl text-white">Book Store</span>
     </div>
 
     <div class="flex-1" />
 
-    <!-- Nav links -->
-    <div class="flex items-center gap-4">
-      <router-link
-        v-for="link in links"
-        :key="link.name"
-        :to="link.to"
-        class="flex items-center gap-1 text-gray-600 text-sm font-medium no-underline"
-      >
-        <span :class="`mdi ${link.icon}`" />
-        {{ link.name }}
-      </router-link>
-    </div>
-
-    <div class="flex-1" />
-
-    <!-- User menu -->
-    <div class="relative">
-      <button @click="showMenu = !showMenu" class="flex items-center gap-1 text-sm text-gray-700">
-        <span class="mdi mdi-account" />
-        {{ username || 'User' }}
-        <span class="mdi mdi-chevron-down text-xs" />
-      </button>
-
-      <!-- Dropdown -->
-      <div v-if="showMenu" class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-md w-36">
-        <button @click="logout" class="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500">
-          <span class="mdi mdi-logout" />
-          Logout
-        </button>
+    <!-- GUEST -->
+    <template v-if="!token">
+      <div class="flex items-center gap-4">
+        <router-link to="/home" class="flex items-center gap-1 text-sm text-white font-medium">
+          <span class="mdi mdi-home" /> Home
+        </router-link>
+        <router-link to="/login" class="text-sm text-white font-medium">Login</router-link>
       </div>
-    </div>
+    </template>
+
+    <!-- USER -->
+    <template v-else-if="role === 'user'">
+      <div class="flex items-center gap-4">
+        <router-link to="/home" class="hover:underline text-white">Accueil</router-link>
+        <router-link to="/books" class="hover:underline text-white">All Books</router-link>
+        <router-link to="/add" class="hover:underline text-white">Add</router-link>
+        <router-link to="/favourites" class="hover:underline text-white">Favourites</router-link>
+        <button @click="logout" class="hover:underline text-white">Logout</button>
+      </div>
+    </template>
+
+    <!-- ADMIN -->
+    <template v-else-if="role === 'admin'">
+      <div class="flex items-center gap-4">
+       <router-link to="/home" class="hover:underline text-white">Accueil</router-link>
+        <router-link to="/books" class="hover:underline text-white">Books</router-link>
+        <router-link to="/authors" class="hover:underline text-white">Authors</router-link>
+        <button @click="logout" class="hover:underline text-white">Logout</button>
+
+        
+      </div>
+    </template>
+
+
 
   </nav>
 </template>

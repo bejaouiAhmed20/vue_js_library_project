@@ -10,9 +10,9 @@ const Authors    = () => import('../views/User/Authors.vue')
 const NotFound   = () => import('../views/NotFound.vue')
 
 const routes: Array<RouteRecordRaw> = [
-  { path: '/',          name: 'Login',      component: Login },
+  { path: '/login',          name: 'Login',      component: Login },
   { path: '/signup',    name: 'Signup',     component: Signup },
-  { path: '/home',      name: 'Home',       component: Home,       meta: { requiresAuth: true } },
+  { path: '/home',      name: 'Home',       component: Home },
   { path: '/authors',   name: 'Authors',    component: Authors,    meta: { requiresAuth: true } },
   { path: '/books/:id', name: 'BookDetail', component: BookDetail, meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
@@ -23,7 +23,7 @@ const router = createRouter({
   routes
 })
 
-// Guard: redirect to login if not authenticated
+// Guard: redirect to login only for strictly protected routes
 router.beforeEach((to) => {
   const isAuthenticated = !!localStorage.getItem('token')
   if (to.meta.requiresAuth && !isAuthenticated) return '/'

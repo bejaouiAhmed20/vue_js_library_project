@@ -11,7 +11,6 @@ const isError = ref(false)
 
 const form = reactive({ identifiant: '', password: '' })
 
-// Submit login form
 const handleLogin = async () => {
   loading.value = true
   message.value = ''
@@ -19,16 +18,13 @@ const handleLogin = async () => {
   try {
     const res = await axios.post('http://localhost:3000/auth/signin', form)
 
-    // Save session data
     localStorage.setItem('token', res.data.access_token)
     localStorage.setItem('username', res.data.username)
-    localStorage.setItem('userId', res.data.id)
+    localStorage.setItem('role', res.data.role) // ✅ "user" or "admin"
 
-    message.value = 'Login successful ✅'
-    isError.value = false
-    router.replace('/home')
+    router.push('/home')
   } catch (err: any) {
-    message.value = err.response?.data?.message || 'Invalid credentials ❌'
+    message.value = err.response?.data?.message || 'Login failed ❌'
     isError.value = true
   } finally {
     loading.value = false
@@ -37,56 +33,34 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+  <div class="min-h-screen bg-gray-300 flex items-center justify-center">
 
-    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
+    <form @submit.prevent="handleLogin" class="w-full max-w-4xl">
 
-      <!-- Header -->
-      <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Welcome Back</h1>
-        <p class="text-gray-500 text-sm">Login to your account</p>
+      <div class="mb-6">
+        <label class="block font-semibold mb-2">Username</label>
+        <input v-model="form.identifiant" class="w-full border px-3 py-2 bg-gray-100" />
       </div>
 
-      <!-- Form -->
-      <form @submit.prevent="handleLogin" class="flex flex-col gap-4">
+      <div class="mb-6">
+        <label class="block font-semibold mb-2">Password</label>
+        <input type="password" v-model="form.password" class="w-full border px-3 py-2 bg-gray-100" />
+      </div>
 
-        <input
-          v-model="form.identifiant"
-          type="text"
-          placeholder="Username or Email"
-          required
-          class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <input
-          v-model="form.password"
-          type="password"
-          placeholder="Password"
-          required
-          class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <button
-          type="submit"
-          :disabled="loading"
-          class="bg-blue-600 text-white py-2 rounded-xl font-semibold hover:bg-blue-700 transition disabled:opacity-50"
-        >
-          {{ loading ? 'Logging in...' : 'Login' }}
+      <div class="flex flex-col items-center gap-4">
+        <button class="bg-blue-700 text-white px-6 py-2 rounded">
+          {{ loading ? 'Loading...' : 'Login' }}
         </button>
 
-        <!-- Feedback message -->
-        <p v-if="message" :class="isError ? 'text-red-500' : 'text-green-500'" class="text-center text-sm">
-          {{ message }}
-        </p>
+        <router-link to="/signup" class="bg-blue-700 text-white px-6 py-2 rounded">
+          Switch to Register
+        </router-link>
+      </div>
 
-      </form>
-
-      <!-- Signup link -->
-      <p class="text-center text-sm text-gray-400 mt-4">
-        Don't have an account?
-        <router-link to="/signup" class="text-blue-500 hover:underline">Sign up</router-link>
+      <p v-if="message" :class="isError ? 'text-red-500' : 'text-green-500'" class="text-center mt-4">
+        {{ message }}
       </p>
 
-    </div>
+    </form>
   </div>
 </template>
