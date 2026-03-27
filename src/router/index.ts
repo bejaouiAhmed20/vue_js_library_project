@@ -6,7 +6,7 @@ const Login      = () => import('../views/User/Login.vue')
 const Signup     = () => import('../views/User/Signup.vue')
 const Home       = () => import('../views/User/Home.vue')
 const BookDetail = () => import('../views/User/BookDetail.vue')
-const Authors    = () => import('../views/User/Authors.vue')
+const Authors    = () => import('../views/Admin/Authors.vue')
 const NotFound   = () => import('../views/NotFound.vue')
 
 const routes: Array<RouteRecordRaw> = [
