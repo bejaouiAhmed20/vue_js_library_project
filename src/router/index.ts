@@ -1,20 +1,54 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-
-// Lazy loaded pages
-const Login      = () => import('../views/User/Login.vue')
-const Signup     = () => import('../views/User/Signup.vue')
-const Home       = () => import('../views/User/Home.vue')
-const BookDetail = () => import('../views/User/BookDetail.vue')
-const Authors    = () => import('../views/Admin/Authors.vue')
-const NotFound   = () => import('../views/NotFound.vue')
+import Login from '../views/User/Login.vue'
+import Signup from '../views/User/Signup.vue'
+import Home from '../views/User/Home.vue'
+import BookDetail from '../views/User/BookDetail.vue'
+import Authors from '../views/Admin/Authors.vue'
+import NotFound from '../views/NotFound.vue'
+import AllBooks from '../views/User/AllBooks.vue'
+import Favorites from '../views/User/Favorites.vue'
+import Books from '../views/Admin/Books.vue'
 
 const routes: Array<RouteRecordRaw> = [
-  { path: '/login',          name: 'Login',      component: Login },
-  { path: '/signup',    name: 'Signup',     component: Signup },
-  { path: '/home',      name: 'Home',       component: Home },
-  { path: '/authors',   name: 'Authors',    component: Authors,    meta: { requiresAuth: true } },
-  { path: '/books/:id', name: 'BookDetail', component: BookDetail, meta: { requiresAuth: true } },
+  { path: '/', redirect: '/login' }, 
+
+  { path: '/login', name: 'Login', component: Login },
+  { path: '/signup', name: 'Signup', component: Signup },
+  { path: '/home', name: 'Home', component: Home },
+
+  {
+    path: '/authors',
+    name: 'Authors',
+    component: Authors,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/allbooks',
+    name: 'AllBooks',
+    component: AllBooks,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/favorites',
+    name: 'FavoriteBooks',
+    component: Favorites,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/books',
+    name: 'Books',
+    component: Books,
+    meta: { requiresAuth: true }
+  },
+
+  {
+    path: '/books/:id',
+    name: 'BookDetail',
+    component: BookDetail,
+    meta: { requiresAuth: true }
+  },
+
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]
 
@@ -23,10 +57,12 @@ const router = createRouter({
   routes
 })
 
-// Guard: redirect to login only for strictly protected routes
 router.beforeEach((to) => {
   const isAuthenticated = !!localStorage.getItem('token')
-  if (to.meta.requiresAuth && !isAuthenticated) return '/'
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return '/login' 
+  }
 })
 
 export default router
