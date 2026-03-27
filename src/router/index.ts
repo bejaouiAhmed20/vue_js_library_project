@@ -18,28 +18,16 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/home', name: 'Home', component: Home },
 
   {
-    path: '/authors',
-    name: 'Authors',
-    component: Authors,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/allbooks',
-    name: 'AllBooks',
-    component: AllBooks,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/favorites',
-    name: 'FavoriteBooks',
-    component: Favorites,
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/books',
     name: 'Books',
     component: Books,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/authors',
+    name: 'Authors',
+    component: Authors,
+    meta: { requiresAuth: true, requiresAdmin: true }
   },
 
   {
@@ -59,10 +47,10 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const isAuthenticated = !!localStorage.getItem('token')
+  const role = localStorage.getItem('role')
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return '/login' 
-  }
+  if (to.meta.requiresAuth && !isAuthenticated) return '/login'
+  if (to.meta.requiresAdmin && role !== 'admin') return '/home'
 })
 
 export default router

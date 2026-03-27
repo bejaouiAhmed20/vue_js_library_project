@@ -5,6 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
+// Use refs so the template reacts to changes
 const token = ref(localStorage.getItem('token'))
 const role  = ref(localStorage.getItem('role'))
 
