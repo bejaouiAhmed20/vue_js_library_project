@@ -1,43 +1,77 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useFavorites } from '../composables/useFavorites'
+import { Heart } from 'lucide-vue-next'
 
 const router = useRouter()
-const props = defineProps(['book'])
+const props = defineProps(['book', 'isFavoritePage'])
+
+const { isFavorite, addFavorite, removeFavorite } = useFavorites()
+
+const toggleFavorite = () => {
+  if (isFavorite(props.book.id)) {
+    removeFavorite(props.book.id)
+  } else {
+    addFavorite(props.book)
+  }
+}
 </script>
 
 <template>
-  <div
-    class="bg-gray-200 w-64 p-4 shadow-md rounded cursor-pointer"
-  >
-    <!-- Image -->
-    <img
-      :src="props.book.image"
-      alt="cover"
-      class="w-full h-64 object-cover mb-3"
-    />
+  <!-- CARD -->
+  <div class="bg-white border border-gray-300 shadow-md overflow-hidden w-64 hover:shadow-xl transition duration-300">
 
-    <!-- Title -->
-    <h3 class="font-semibold text-gray-800 text-sm">
-      {{ props.book.title }}
-    </h3>
+    <!-- IMAGE + HEART -->
+    <div class="relative">
+      
+      <!-- ❤️ Favorite Icon -->
+      <button
+        @click.stop="toggleFavorite"
+        class="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full p-2 shadow-md hover:scale-110 transition z-10"
+      >
+        <Heart
+          :class="[
+            'w-5 h-5 transition',
+            isFavorite(props.book.id)
+              ? 'text-red-500 fill-red-500'
+              : 'text-gray-400'
+          ]"
+        />
+      </button>
 
-    <!-- Author -->
-    <p class="text-xs text-gray-600 mb-2">
-      {{ props.book.author?.prenom }} {{ props.book.author?.nom }}
-    </p>
+      <!-- Image -->
+      <img
+        :src="props.book.image"
+        alt="cover"
+        class="w-full h-64 object-cover cursor-pointer"
+        @click="router.push(`/books/${props.book.id}`)"
+      />
+    </div>
 
-    <!-- Description -->
-    <p class="text-xs text-gray-700 mb-4">
-      {{ props.book.description || "Un résumé captivant pour ce livre incontournable." }}
-    </p>
+    <!-- CONTENT -->
+    <div class="p-4 text-center">
+      
+      <!-- Author -->
+      <h3 class="text-orange-600 font-semibold text-sm">
+        {{ props.book.author?.prenom }} {{ props.book.author?.nom }}
+      </h3>
 
-    <!-- Button -->
-    <div class="flex justify-center">
+      <!-- Title -->
+      <h2 class="text-lg font-bold text-gray-800 mb-2">
+        {{ props.book.title }}
+      </h2>
+
+      <!-- Description -->
+      <p class="text-xs text-gray-500 mb-4 line-clamp-2">
+        {{ props.book.description || 'Un résumé captivant pour ce livre incontournable.' }}
+      </p>
+
+      <!-- Button -->
       <button
         @click="router.push(`/books/${props.book.id}`)"
-        class="bg-blue-700 text-white px-4 py-1 text-sm rounded shadow hover:bg-blue-800 transition"
+        class="bg-blue-900 text-white px-4 py-2 text-sm hover:bg-blue-700 transition"
       >
-        Voir Plus
+        Voir plus
       </button>
     </div>
   </div>

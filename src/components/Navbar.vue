@@ -5,6 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
+// Use refs so the template reacts to changes
 const token = ref(localStorage.getItem('token'))
 const role  = ref(localStorage.getItem('role'))
 
@@ -32,16 +33,16 @@ const logout = () => {
 
   <!-- GUEST -->
       <template v-if="!token">
-        <router-link to="/" class="hover:underline text-white">Home</router-link>
+        <router-link to="/home" class="hover:underline text-white">Home</router-link>
         <router-link to="/login" class="hover:underline text-white">Login</router-link>
       </template>
 
       <!--  USER -->
       <template v-else-if="role === 'user'">
         <router-link to="/home" class="hover:underline text-white">Accueil</router-link>
-        <router-link to="/books" class="hover:underline text-white">All Books</router-link>
+        <router-link to="/allbooks" class="hover:underline text-white">All Books</router-link>
         <router-link to="/add" class="hover:underline text-white">Add</router-link>
-        <router-link to="/favourites" class="hover:underline text-white">Favourites</router-link>
+        <router-link to="/Favourites" class="hover:underline text-white">Favourites</router-link>
         <button @click="logout" class="hover:underline text-white">Logout</button>
       </template>
 

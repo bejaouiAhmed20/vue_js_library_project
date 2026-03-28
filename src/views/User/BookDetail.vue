@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useFavorites } from '../../composables/useFavorites'
 
 const route = useRoute()
 const router = useRouter()
 const book = ref<any>(null)
 const loading = ref(true)
+
+const { isFavorite, addFavorite, removeFavorite } = useFavorites()
 
 onMounted(async () => {
   try {
@@ -14,7 +17,6 @@ onMounted(async () => {
       headers: { Authorization: `Bearer ${token}` }
     })
     const data = await res.json()
-    // API returns an array, take the first item
     book.value = Array.isArray(data) ? data[0] : data
   } catch (e) {
     console.error(e)
@@ -33,7 +35,7 @@ onMounted(async () => {
 
     <p v-if="loading" class="text-center text-gray-500">Loading book...</p>
 
-    <div v-else-if="book" class="bg-white rounded-2xl shadow-md p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+    <div v-else-if="book" class="bg-white  shadow-md p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
       <img :src="book.image" alt="cover" class="w-full rounded-xl object-cover" />
 
       <div>
@@ -48,7 +50,21 @@ onMounted(async () => {
           <span class="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">🏢 {{ book.editor }}</span>
         </div>
 
-        <p class="text-gray-600">{{ book.description || 'No description available.' }}</p>
+        <!-- Favorites button -->
+        <button
+          v-if="!isFavorite(book.id)"
+          @click="addFavorite(book)"
+          class="bg-pink-500 text-white p-5   text-sm hover:bg-pink-600 transition"
+        >
+          Add to Favorites
+        </button>
+        <button
+          v-else
+          @click="removeFavorite(book.id)"
+          class="bg-gray-200 text-gray-700 px-5 py-2 rounded-xl text-sm hover:bg-gray-300 transition"
+        >
+          ♥ Remove from Favorites
+        </button>
       </div>
     </div>
 
