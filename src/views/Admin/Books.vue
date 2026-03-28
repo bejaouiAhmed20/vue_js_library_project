@@ -86,7 +86,7 @@ const deleteBook = async (id: number) => {
 <template>
   <div class="p-8 bg-gray-100 min-h-screen">
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-gray-800">📚 Manage Books</h1>
+      <h1 class="text-2xl font-bold text-gray-800">Manage Books</h1>
       <button @click="openCreate" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 transition">
         Add Book
       </button>

@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import Login from '../views/User/Login.vue'
-import Signup from '../views/User/Signup.vue'
+import Login from '../views/Login.vue'
+import Signup from '../views/Signup.vue'
 import Home from '../views/User/Home.vue'
 import BookDetail from '../views/User/BookDetail.vue'
 import Authors from '../views/Admin/Authors.vue'
 import NotFound from '../views/NotFound.vue'
-import AllBooks from '../views/User/AllBooks.vue'
-import Favorites from '../views/User/Favorites.vue'
 import Books from '../views/Admin/Books.vue'
+import Favorites from '../views/User/Favorites.vue'
+import AllBooks from '../views/User/AllBooks.vue'
 
 const routes: Array<RouteRecordRaw> = [
   { path: '/', redirect: '/login' }, 
@@ -22,6 +22,18 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Books',
     component: Books,
     meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/Favourites',
+    name: 'Favourites',
+    component: Favorites,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/allbooks',
+    name: 'AllBooks',
+    component: AllBooks,
+    meta: { requiresAuth: true }
   },
   {
     path: '/authors',
