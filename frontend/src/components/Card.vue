@@ -13,43 +13,62 @@ const toggleFavorite = () => {
 </script>
 
 <template>
-  <div class="bg-white border border-gray-300 shadow-md overflow-hidden w-64 hover:shadow-xl transition duration-300">
-
-    <!-- Image + Heart -->
-    <div class="relative">
-      <button
-        @click.stop="toggleFavorite"
-        class="absolute top-3 right-3 bg-white/90 rounded-full p-2 shadow-md z-10"
-      >
-        <span
-          :class="isFavorite(props.book.id) ? 'mdi mdi-heart text-red-500' : 'mdi mdi-heart-outline text-gray-400'"
-          class="text-xl"
-        />
-      </button>
-
+  <div
+    class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-64 overflow-hidden"
+  >
+    <!-- Image -->
+    <div class="group">
       <img
         :src="props.book.image"
         alt="cover"
-        class="w-full h-64 object-cover cursor-pointer"
+        class="w-full h-64 object-cover cursor-pointer group-hover:scale-105 transition duration-300"
         @click="router.push(`/books/${props.book.id}`)"
       />
     </div>
 
     <!-- Content -->
-    <div class="p-4 text-center">
-      <h3 class="text-orange-600 font-semibold text-sm">
+    <div class="p-5 flex flex-col gap-2">
+      
+      <!-- Author -->
+      <p class="text-xs text-orange-500 font-medium">
         {{ props.book.author?.prenom }} {{ props.book.author?.nom }}
-      </h3>
-      <h2 class="text-lg font-bold text-gray-800 mb-2">{{ props.book.title }}</h2>
-      <p class="text-xs text-gray-500 mb-4 line-clamp-2">
+      </p>
+
+      <!-- Title -->
+      <h2 class="text-lg font-semibold text-gray-800 line-clamp-1">
+        {{ props.book.title }}
+      </h2>
+
+      <!-- Description -->
+      <p class="text-sm text-gray-500 line-clamp-2">
         {{ props.book.description || 'Un résumé captivant pour ce livre incontournable.' }}
       </p>
-      <button
-        @click="router.push(`/books/${props.book.id}`)"
-        class="bg-blue-900 text-white px-4 py-2 text-sm hover:bg-blue-700 transition"
-      >
-        Voir plus
-      </button>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2 mt-3">
+        
+        <!-- Voir plus -->
+        <button
+          @click="router.push(`/books/${props.book.id}`)"
+          class="flex-1 bg-blue-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+        >
+          Voir plus
+        </button>
+
+        <!-- Favorite -->
+        <button
+          @click.stop="toggleFavorite"
+          class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 transition"
+        >
+          <span
+            :class="isFavorite(props.book.id)
+              ? 'mdi mdi-heart text-red-500'
+              : 'mdi mdi-heart-outline text-gray-500'"
+            class="text-xl"
+          />
+        </button>
+
+      </div>
     </div>
   </div>
 </template>

@@ -1,16 +1,29 @@
 import { ref } from 'vue'
 
-const userId = localStorage.getItem('userId') ?? 'guest'
-const KEY = `favorites_${userId}`
+const favorites = ref<any[]>([])
+let currentKey = 'favorites_guest'
 
-// Reactive favorites list for the current user
-const favorites = ref<any[]>(JSON.parse(localStorage.getItem(KEY) ?? '[]'))
+// Function to refresh favorites when the user logs in/out
+export const initFavorites = () => {
+  const userId = localStorage.getItem('userId') ?? 'guest'
+  currentKey = `favorites_${userId}`
+  favorites.value = JSON.parse(localStorage.getItem(currentKey) ?? '[]')
+}
 
-const save = () => localStorage.setItem(KEY, JSON.stringify(favorites.value))
+// Initialize immediately on load
+initFavorites()
+
+const save = () => localStorage.setItem(currentKey, JSON.stringify(favorites.value))
 
 export const useFavorites = () => {
+  // Ensure we are in sync when the composable is called
+  const currentUserId = localStorage.getItem('userId') ?? 'guest'
+  if (currentKey !== `favorites_${currentUserId}`) {
+    initFavorites()
+  }
+
   const isFavorite = (bookId: number) =>
-    favorites.value.some(b => b.id === bookId)
+    favorites.value.some((b: any) => b.id === bookId)
 
   const addFavorite = (book: any) => {
     if (!isFavorite(book.id)) {
@@ -20,9 +33,9 @@ export const useFavorites = () => {
   }
 
   const removeFavorite = (bookId: number) => {
-    favorites.value = favorites.value.filter(b => b.id !== bookId)
+    favorites.value = favorites.value.filter((b: any) => b.id !== bookId)
     save()
   }
 
-  return { favorites, isFavorite, addFavorite, removeFavorite }
+  return { favorites, isFavorite, addFavorite, removeFavorite, initFavorites }
 }

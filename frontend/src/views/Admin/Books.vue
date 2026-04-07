@@ -62,7 +62,7 @@ const submitForm = async () => {
       year:   form.value.year,
       editor: form.value.editor,
       image:  form.value.image,
-    })
+    }, { headers })
   } else {
     // POST /books/new — requires admin JWT
     await fetch('http://localhost:3000/books/new', {
@@ -84,79 +84,155 @@ const deleteBook = async (id: number) => {
 </script>
 
 <template>
-  <div class="p-8 bg-gray-100 min-h-screen">
+  <div class="p-6 bg-gray-100 min-h-screen">
+
+    <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-gray-800">Manage Books</h1>
-      <button @click="openCreate" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 transition">
-        Add Book
+      <h1 class="text-2xl font-semibold text-gray-800">Manage Books</h1>
+
+      <button
+        @click="openCreate"
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+      >
+        + Add Book
       </button>
     </div>
 
+    <!-- Loading -->
     <p v-if="loading" class="text-center text-gray-500">Loading...</p>
 
-    <!-- Books table -->
-    <div v-else class="bg-white rounded-2xl shadow overflow-hidden">
+    <!-- Table -->
+    <div v-else class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
       <table class="w-full text-sm">
-        <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+        <thead class="bg-gray-50 text-gray-600 text-xs uppercase">
           <tr>
-            <th class="px-4 py-3 text-left">ID</th>
-            <th class="px-4 py-3 text-left">Title</th>
             <th class="px-4 py-3 text-left">Image</th>
+            <th class="px-4 py-3 text-left">Title</th>
             <th class="px-4 py-3 text-left">Year</th>
             <th class="px-4 py-3 text-left">Editor</th>
             <th class="px-4 py-3 text-left">Actions</th>
           </tr>
         </thead>
+
         <tbody>
-          <tr v-for="book in books" :key="book.id" class="border-t border-gray-100">
-            <td class="px-4 py-3 text-gray-400">{{ book.id }}</td>
-            <td class="px-4 py-3 font-medium text-gray-800">{{ book.title }}</td>
-            <td class="px-4 py-3 text-gray-500">
-              {{ book.image }} 
+          <tr
+            v-for="book in books"
+            :key="book.id"
+            class="border-t hover:bg-gray-50 transition"
+          >
+            <td class="px-3 py-2">
+              <img
+                :src="book.image"
+                class="w-14 h-14 object-cover rounded-md border"
+              />
             </td>
-            <td class="px-4 py-3 text-gray-500">{{ book.year }}</td>
-            <td class="px-4 py-3 text-gray-500">{{ book.editor }}</td>
+
+            <td class="px-4 py-3 font-medium text-gray-800">
+              {{ book.title }}
+            </td>
+
+            <td class="px-4 py-3 text-gray-500">
+              {{ book.year }}
+            </td>
+
+            <td class="px-4 py-3 text-gray-500">
+              {{ book.editor }}
+            </td>
+
             <td class="px-4 py-3 flex gap-2">
-              <button @click="openEdit(book)" class="bg-blue-900 text-white px-3 py-1 rounded-lg text-xs hover:bg-yellow-500 transition">
+
+              <!-- Edit -->
+              <button
+                @click="openEdit(book)"
+                class="px-3 py-1 text-xs font-medium rounded-md
+                       bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+              >
                 Edit
               </button>
-              <button @click="deleteBook(book.id)" class="bg-blue-900 text-white px-3 py-1 rounded-lg text-xs hover:bg-red-600 transition">
+
+              <!-- Delete -->
+              <button
+                @click="deleteBook(book.id)"
+                class="px-3 py-1 text-xs font-medium rounded-md
+                       bg-red-50 text-red-600 hover:bg-red-100 transition"
+              >
                 Delete
               </button>
+
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Create / Edit modal -->
+    <!-- Modal -->
     <div v-if="showForm" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-        <h2 class="text-lg font-bold mb-4">{{ editingBook ? 'Edit Book' : 'Add Book' }}</h2>
 
-        <div class="flex flex-col gap-3">
-          <input v-model="form.title"    placeholder="Title"    class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none" />
-          <input v-model="form.year"     placeholder="Year"     type="number" class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none" />
-          <input v-model="form.editor"   placeholder="Editor"   class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none" />
-          <input v-model="form.image"    placeholder="Image URL" class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none" />
+      <div class="bg-white w-full max-w-md p-6 rounded-xl shadow-lg">
 
-          <!-- Author select (only for create) -->
-          <select v-if="!editingBook" v-model="form.authorId" class="border border-gray-300 rounded-xl px-4 py-2 text-sm outline-none">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">
+          {{ editingBook ? 'Edit Book' : 'Add Book' }}
+        </h2>
+
+        <div class="space-y-3">
+
+          <input v-model="form.title"
+            placeholder="Title"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <input v-model="form.year"
+            type="number"
+            placeholder="Year"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <input v-model="form.editor"
+            placeholder="Editor"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <input v-model="form.image"
+            placeholder="Image URL"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <select
+            v-if="!editingBook"
+            v-model="form.authorId"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
             <option value="" disabled>Select Author</option>
             <option v-for="a in authors" :key="a.id" :value="a.id">
               {{ a.prenom }} {{ a.nom }}
             </option>
           </select>
+
         </div>
 
+        <!-- Actions -->
         <div class="flex gap-3 mt-5">
-          <button @click="submitForm" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm hover:bg-blue-700 transition">
+          <button
+            @click="submitForm"
+            class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+          >
             {{ editingBook ? 'Save' : 'Create' }}
           </button>
-          <button @click="showForm = false" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-300 transition">
+
+          <button
+            @click="showForm = false"
+            class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition"
+          >
             Cancel
           </button>
         </div>
+
       </div>
     </div>
 

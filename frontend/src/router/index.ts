@@ -10,16 +10,18 @@ import Books from '../views/Admin/Books.vue'
 import Favorites from '../views/User/Favorites.vue'
 import AllBooks from '../views/User/AllBooks.vue'
 import AddBook from '../views/User/AddBook.vue'
+import AdminLogin from '../views/Admin/AdminLogin.vue'
 
 const routes: Array<RouteRecordRaw> = [
   { path: '/', redirect: '/login' }, 
 
   { path: '/login', name: 'Login', component: Login },
   { path: '/signup', name: 'Signup', component: Signup },
+  { path: '/admin/login', name: 'AdminLogin', component: AdminLogin },
   { path: '/home', name: 'Home', component: Home },
 
   {
-    path: '/books',
+    path: '/admin/books',
     name: 'Books',
     component: Books,
     meta: { requiresAuth: true, requiresAdmin: true }
@@ -43,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/authors',
+    path: '/admin/authors',
     name: 'Authors',
     component: Authors,
     meta: { requiresAuth: true, requiresAdmin: true }
@@ -68,8 +70,22 @@ router.beforeEach((to) => {
   const isAuthenticated = !!localStorage.getItem('token')
   const role = localStorage.getItem('role')
 
-  if (to.meta.requiresAuth && !isAuthenticated) return '/login'
-  if (to.meta.requiresAdmin && role !== 'admin') return '/home'
+  // Prevent users from accessing admin routes and vice versa
+  if (to.path.startsWith('/admin') && to.path !== '/admin/login') {
+    if (!isAuthenticated || role !== 'admin') {
+      return '/admin/login'
+    }
+  }
+
+  // Prevent non-logged-in access to auth-required user routes
+  if (to.meta.requiresAuth && !isAuthenticated && !to.path.startsWith('/admin')) {
+    return '/login'
+  }
+
+  // If a user tries to access a protected admin-only route manually (sanity check)
+  if (to.meta.requiresAdmin && role !== 'admin') {
+    return '/home'
+  }
 })
 
 export default router
