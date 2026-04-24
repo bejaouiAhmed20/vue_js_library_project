@@ -17,19 +17,18 @@ const form = ref(emptyForm())
 
 // Fetch all books and authors on mount
 onMounted(async () => {
-  await Promise.all([fetchBooks(), fetchAuthors()])
+  await Promise.all([getBooks(), getAuthors()])
   loading.value = false
 })
 
-const fetchBooks = async () => {
-  const res = await fetch('http://localhost:3000/books/all')
-  const data = await res.json()
-  books.value = data.listeBooks ?? data
+const getBooks = async () => {
+  const res = await axios.get('http://localhost:3000/books/all')
+  books.value = res.data.listeBooks ?? res.data
 }
 
-const fetchAuthors = async () => {
-  const res = await fetch('http://localhost:3000/author/all')
-  authors.value = await res.json()
+const getAuthors = async () => {
+  const res = await axios.get('http://localhost:3000/author/all')
+  authors.value = res.data
 }
 
 // Open form for creating a new book
@@ -65,21 +64,17 @@ const submitForm = async () => {
     }, { headers })
   } else {
     // POST /books/new — requires admin JWT
-    await fetch('http://localhost:3000/books/new', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(form.value)
-    })
+    await axios.post('http://localhost:3000/books/new', form.value, { headers })
   }
   showForm.value = false
-  await fetchBooks()
+  await getBooks()
 }
 
 // DELETE /books/delete/:id
 const deleteBook = async (id: number) => {
   if (!confirm('Delete this book?')) return
-  await fetch(`http://localhost:3000/books/delete/${id}`, { method: 'DELETE' })
-  await fetchBooks()
+  await axios.delete(`http://localhost:3000/books/delete/${id}`, { headers })
+  await getBooks()
 }
 </script>
 

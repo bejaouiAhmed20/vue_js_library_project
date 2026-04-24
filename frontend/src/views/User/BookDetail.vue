@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
 import { useFavorites } from '../../composables/useFavorites'
 
 const route = useRoute()
@@ -13,10 +14,10 @@ const { isFavorite, addFavorite, removeFavorite } = useFavorites()
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch(`http://localhost:3000/books/search/${route.params.id}`, {
+    const res = await axios.get(`http://localhost:3000/books/search/${route.params.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    const data = await res.json()
+    const data = res.data
     book.value = Array.isArray(data) ? data[0] : data
   } catch (e) {
     console.error(e)
@@ -68,7 +69,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <p v-else class="text-center text-gray-400">Book not found 😢</p>
+    <p v-else class="text-center text-gray-400">Book not found ....</p>
 
   </div>
 </template>

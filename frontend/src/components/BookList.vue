@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
 import Card from './Card.vue'
 
 const props = defineProps(['query'])
@@ -8,9 +9,8 @@ const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const res = await fetch('http://localhost:3000/books/all')
-    const data = await res.json()
-    books.value = data.listeBooks ?? []
+    const res = await axios.get('http://localhost:3000/books/all')
+    books.value = res.data.listeBooks ?? []
   } catch (e) {
     console.error(e)
   } finally {
@@ -23,6 +23,7 @@ const filtered = computed(() =>
     ? books.value.filter(b => b.title?.toLowerCase().includes(props.query.toLowerCase()))
     : books.value
 )
+
 </script>
 
 <template>

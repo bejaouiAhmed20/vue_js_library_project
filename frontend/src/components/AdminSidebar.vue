@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router'
-import { LayoutDashboard, Users, BookOpen, LogOut } from 'lucide-vue-next'
+import { Users, BookOpen, LogOut } from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
@@ -36,6 +36,7 @@ const logout = () => {
           :class="route.path.startsWith('/admin/books') ? 'text-blue-600' : 'text-gray-400'" />
         Manage Books
       </router-link>
+    
 
       <!-- Authors -->
       <router-link

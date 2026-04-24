@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 const authors = ref<any[]>([])
 const loading = ref(true)
@@ -24,8 +25,8 @@ const form = ref({
 // Fetch authors (same as your admin page)
 onMounted(async () => {
   try {
-    const res = await fetch('http://localhost:3000/author/all')
-    authors.value = await res.json()
+    const res = await axios.get('http://localhost:3000/author/all')
+    authors.value = res.data
   } catch (err) {
     errorMessage.value = 'Failed to load authors'
   } finally {
@@ -39,13 +40,7 @@ const submitForm = async () => {
   errorMessage.value = ''
 
   try {
-    const res = await fetch('http://localhost:3000/books/new', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(form.value)
-    })
-
-    if (!res.ok) throw new Error()
+    await axios.post('http://localhost:3000/books/new', form.value, { headers })
 
     successMessage.value = 'Book added successfully '
 

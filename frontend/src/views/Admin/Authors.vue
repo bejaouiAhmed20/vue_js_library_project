@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 const authors  = ref<any[]>([])
 const loading  = ref(true)
@@ -8,25 +9,21 @@ const form     = ref({ prenom: '', nom: '' })
 
 // Fetch all authors on mount
 onMounted(async () => {
-  await fetchAuthors()
+  await getAuthors()
   loading.value = false
 })
 
-const fetchAuthors = async () => {
-  const res = await fetch('http://localhost:3000/author/all')
-  authors.value = await res.json()
+const getAuthors = async () => {
+  const res = await axios.get('http://localhost:3000/author/all')
+  authors.value = res.data
 }
 
 // POST /author/add — no auth required
 const submitForm = async () => {
-  await fetch('http://localhost:3000/author/add', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(form.value)
-  })
+  await axios.post('http://localhost:3000/author/add', form.value)
   form.value = { prenom: '', nom: '' }
   showForm.value = false
-  await fetchAuthors()
+  await getAuthors()
 }
 </script>
 

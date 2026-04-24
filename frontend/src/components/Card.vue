@@ -39,10 +39,7 @@ const toggleFavorite = () => {
         {{ props.book.title }}
       </h2>
 
-      <!-- Description -->
-      <p class="text-sm text-gray-500 line-clamp-2">
-        {{ props.book.description || 'Un résumé captivant pour ce livre incontournable.' }}
-      </p>
+     
 
       <!-- Actions -->
       <div class="flex items-center gap-2 mt-3">

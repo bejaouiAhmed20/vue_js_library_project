@@ -100,7 +100,7 @@ const isActive = (path: string) => route.path === path
             </router-link>
 
             <!-- Add Book -->
-            <router-link
+            <!-- <router-link
               to="/add-book"
               class="px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition
                      text-gray-600 hover:text-blue-600 hover:bg-blue-50/80"
@@ -109,7 +109,7 @@ const isActive = (path: string) => route.path === path
               <PlusCircle class="w-4 h-4 mr-1.5"
                           :class="isActive('/add-book') ? 'text-blue-600' : 'text-gray-400'" />
               Add Book
-            </router-link>
+            </router-link> -->
 
             <!-- Favourites -->
             <router-link
